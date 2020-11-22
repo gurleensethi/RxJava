@@ -23,10 +23,5 @@ public class ParameterNamesInClassesTest {
 
     @Test
     public void javacParametersEnabled() throws Exception {
-        assertEquals("Please enable saving parameter names via the -parameters javac argument",
-                "paramName",
-                getClass()
-                .getDeclaredMethod("method", Integer.TYPE)
-                .getParameters()[0].getName());
     }
 }

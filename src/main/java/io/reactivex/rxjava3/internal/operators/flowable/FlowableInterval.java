@@ -44,17 +44,7 @@ public final class FlowableInterval extends Flowable<Long> {
     public void subscribeActual(Subscriber<? super Long> s) {
         IntervalSubscriber is = new IntervalSubscriber(s);
         s.onSubscribe(is);
-
-        Scheduler sch = scheduler;
-
-        if (sch instanceof TrampolineScheduler) {
-            Worker worker = sch.createWorker();
-            is.setResource(worker);
-            worker.schedulePeriodically(is, initialDelay, period, unit);
-        } else {
-            Disposable d = sch.schedulePeriodicallyDirect(is, initialDelay, period, unit);
-            is.setResource(d);
-        }
+        scheduler.subscribeActual(is, initialDelay, period, unit, (d) -> is.setResource(d));
     }
 
     static final class IntervalSubscriber extends AtomicLong

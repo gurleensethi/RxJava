@@ -43,17 +43,7 @@ public final class ObservableIntervalRange extends Observable<Long> {
     public void subscribeActual(Observer<? super Long> observer) {
         IntervalRangeObserver is = new IntervalRangeObserver(observer, start, end);
         observer.onSubscribe(is);
-
-        Scheduler sch = scheduler;
-
-        if (sch instanceof TrampolineScheduler) {
-            Worker worker = sch.createWorker();
-            is.setResource(worker);
-            worker.schedulePeriodically(is, initialDelay, period, unit);
-        } else {
-            Disposable d = sch.schedulePeriodicallyDirect(is, initialDelay, period, unit);
-            is.setResource(d);
-        }
+        scheduler.subscribeActual(is, initialDelay, period, unit, (d) -> is.setResource(d));
     }
 
     static final class IntervalRangeObserver

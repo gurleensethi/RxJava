@@ -18,9 +18,11 @@ package io.reactivex.rxjava3.internal.schedulers;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.core.Scheduler.Worker;
 import io.reactivex.rxjava3.disposables.*;
 import io.reactivex.rxjava3.internal.disposables.EmptyDisposable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -38,7 +40,7 @@ public final class TrampolineScheduler extends Scheduler {
 
     @NonNull
     @Override
-    public Worker createWorker() {
+    public Worker createWorker() {    	
         return new TrampolineWorker();
     }
 
@@ -204,4 +206,10 @@ public final class TrampolineScheduler extends Scheduler {
             }
         }
     }
+    
+    public void subscribeActual(Runnable is, long initialDelay, long period, @NonNull TimeUnit unit, Consumer<Disposable> disposableConsumer) {
+    	Worker worker = this.createWorker();
+    	disposableConsumer.accept(worker);
+        worker.schedulePeriodically(is, initialDelay, period, unit);
+	}
 }

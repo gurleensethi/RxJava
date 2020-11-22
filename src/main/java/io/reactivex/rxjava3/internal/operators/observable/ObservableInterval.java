@@ -39,17 +39,7 @@ public final class ObservableInterval extends Observable<Long> {
     public void subscribeActual(Observer<? super Long> observer) {
         IntervalObserver is = new IntervalObserver(observer);
         observer.onSubscribe(is);
-
-        Scheduler sch = scheduler;
-
-        if (sch instanceof TrampolineScheduler) {
-            Worker worker = sch.createWorker();
-            is.setResource(worker);
-            worker.schedulePeriodically(is, initialDelay, period, unit);
-        } else {
-            Disposable d = sch.schedulePeriodicallyDirect(is, initialDelay, period, unit);
-            is.setResource(d);
-        }
+        scheduler.subscribeActual(is, initialDelay, period, unit, (d) -> is.setResource(d));
     }
 
     static final class IntervalObserver

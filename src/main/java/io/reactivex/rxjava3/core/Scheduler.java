@@ -15,6 +15,7 @@ package io.reactivex.rxjava3.core;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import io.reactivex.rxjava3.annotations.*;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -642,4 +643,9 @@ public abstract class Scheduler {
             return this.decoratedRun;
         }
     }
+    
+    public void subscribeActual(Runnable is, long initialDelay, long period, @NonNull TimeUnit unit, Consumer<Disposable> disposableConsumer) {
+		Disposable d = this.schedulePeriodicallyDirect(is, initialDelay, period, unit);
+		disposableConsumer.accept(d);
+	}
 }
